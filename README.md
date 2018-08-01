@@ -15,3 +15,6 @@ The list will be appended as I find other uses for this project.
       a. Initially just look at historical data
     
       b. Eventually build project to the point where we can run ML to make future stock predictions.
+
+
+**Currently in development**
