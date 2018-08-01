@@ -4,13 +4,13 @@ Access Robinhood account, analyze stock data, and make predictions about what st
 With this project I intend it to fulfill several tasks, which are described below.
 The list will be appended as I find other uses for this project.
 
-  1. Access Robinhood account
+  1. Access Robinhood account.
     
       a. Report movement of stocks owned for today.
     
       b. Buy/sell stocks from the command line.
       
-  2. Call the IEX (Investors Exchange) API and analyze specific stocks
+  2. Call the IEX (Investors Exchange) API and analyze specific stocks.
     
       a. Initially just look at historical data
     
