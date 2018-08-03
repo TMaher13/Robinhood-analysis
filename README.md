@@ -10,7 +10,7 @@ The list will be appended as I find other uses for this project.
     
       b. Buy/sell stocks from the command line.
       
-  2. Call the IEX (Investors Exchange) API and analyze specific stocks.
+  2. Use the Stocker Toolkit to get stock data (quandl based package)
     
       a. Initially just look at historical data
     
