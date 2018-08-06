@@ -3,19 +3,24 @@
 ## Thomas Maher
 ## 7/31/18
 
- import getpass
- import logging
- import warnings
- from enum import Enum
+import getpass
+import logging
+import warnings
+from enum import Enum
 
+import os
 import requests
 import six
 from six.moves.urllib.parse import unquote
 from six.moves.urllib.request import getproxies
 from six.moves import input
-import exceptions as RH_exception
+import time
 
 from config import USERNAME, PASSWORD
+
+## To allow for escape sequence to clear screen between implementation loops
+import colorama
+colorama.init()
 
 
 ## Build robinhood class
@@ -69,6 +74,18 @@ class Robinhood:
         self.session = requests.session()
         self.session.proxies = getproxies()
 
+        self.headers = {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "en;q=1",
+            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+            "X-Robinhood-API-Version": "1.0.0",
+            "Connection": "keep-alive",
+            "User-Agent": "Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)",
+            "Origin": "https://robinhood.com"
+        }
+        self.session.headers = self.headers
+
     def login_request(self):
         username = input("Enter your username: ")
         password = getpass.getpass()
@@ -121,3 +138,84 @@ class Robinhood:
             request.raise_for_status()
             data = resolve
             return data
+        except:
+            print("\nAlready logged out.")
+
+    def show_portfolio(self):
+        ## Show portfolio
+        while True:
+            print('\x1b[2J\x1b[H') # Escape sequence to clear screen
+            print("Welcome to your portfolio page!")
+
+            leave = input("Exit back to home page? (y/n) ")
+            if leave == 'y' or leave == 'Y': time.sleep(1); break
+            else: continue
+
+    def show_stock(self):
+        ## Show a specific stock
+        print('Stock')
+
+        while True:
+
+            stay = input("Look at another stock? (y/n) ")
+            if stay == 'y' or stay == 'Y': continue
+            else: time.sleep(1); break
+
+    def buy_stock(self):
+        ## Buy stock
+        print('Buy')
+
+        while True:
+
+
+            stay = input("Buy another stock? (y/n) ")
+            if stay == 'y' or stay == 'Y': continue
+            else: time.sleep(1); break
+
+    def sell_stock(self):
+        ## Sell stock
+        print('Sell')
+
+        while True:
+
+
+            stay = input("Sell another stock? (y/n) ")
+            if stay == 'y' or stay == 'Y': continue
+            else: time.sleep(1); break
+
+
+if __name__ == '__main__':
+    ## Initialize trader
+    trader = Robinhood()
+    while True:
+        #os.system('cls' if os.name == 'nt' else 'clear')
+        print('\x1b[2J\x1b[H') # Escape sequence to clear screen
+        print("Welcome to my command line Robinhood Trader! Try it out and give any feedback you have on my github page!\n")
+        print("There are 5 things you can do:")
+        print("\t1) To look at your stock portfolio, type 'portfolio'")
+        print("\t2) To look at a specific stock, type 'stock'")
+        print("\t3) To buy stocks, type 'buy'")
+        print("\t4) To sell stocks, type 'sell'")
+        print("\t5) To end your session, type 'end'\n")
+
+        command = str(input("What do you want to do? "))
+
+        if command == 'portfolio' or command =='Portfolio':
+            trader.show_portfolio()
+        elif command == 'stock' or command == 'Stock':
+            trader.show_stock()
+        elif command == 'buy' or command == 'Buy':
+            trader.buy_stock()
+        elif command == 'sell' or command == 'Sell':
+            trader.sell_stock()
+        elif command == 'end' or command == 'End':
+            trader.logout()
+            print("Thanks for using my project!")
+            time.sleep(5)
+            print('\x1b[2J\x1b[H') # Escape sequence to clear screen
+            break
+        else:
+            print("\nDid not enter a correct command.\nEnding session.")
+            time.sleep(5)
+            print('\x1b[2J\x1b[H') # Escape sequence to clear screen
+            break
