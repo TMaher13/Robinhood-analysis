@@ -113,3 +113,11 @@ class Robinhood:
             return True
 
         return False
+
+    def logout(self):
+
+        try:
+            request = self.session.ppost(self.endpoints['logout'])
+            request.raise_for_status()
+            data = resolve
+            return data
