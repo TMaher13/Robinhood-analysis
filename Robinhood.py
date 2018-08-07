@@ -162,6 +162,10 @@ class Robinhood:
             if stay == 'y' or stay == 'Y': continue
             else: time.sleep(1); break
 
+
+    ## Method used for buying stocks.
+    ## Ask for ticker, show current price, and ask how many stocks they would like to buy
+    ## Built so that user must enter twice that they would like to buy to ensure transaction
     def buy_stock(self):
         ## Buy stock
         #print('Buy')
