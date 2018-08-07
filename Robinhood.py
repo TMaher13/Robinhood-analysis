@@ -15,6 +15,7 @@ from six.moves.urllib.parse import unquote
 from six.moves.urllib.request import getproxies
 from six.moves import input
 import time
+import subprocess
 
 from config import USERNAME, PASSWORD
 
@@ -163,7 +164,18 @@ class Robinhood:
 
     def buy_stock(self):
         ## Buy stock
-        print('Buy')
+        #print('Buy')
+        print('\x1b[2J\x1b[H') # Escape sequence to clear screen
+        print("Welcome to the page where you can buy stock!\n")
+        ticker = input("Enter the ticker for the stock you would like to buy: ")
+
+        transaction = Transaction.BUY
+        stock_instrument = self.get_instrument(ticker)
+        if not stock_instrument['url']:
+            print("Stock cannot be found.")
+            print("Leaving transaction page.")
+            time.sleep(1)
+            return
 
         while True:
 
@@ -187,10 +199,15 @@ class Robinhood:
 if __name__ == '__main__':
     ## Initialize trader
     trader = Robinhood()
+    #bashCommand = str(printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -)
     while True:
         #os.system('cls' if os.name == 'nt' else 'clear')
         print('\x1b[2J\x1b[H') # Escape sequence to clear screen
-        print("Welcome to my command line Robinhood Trader! Try it out and give any feedback you have on my github page!\n")
+
+        #process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        #output, error = process.communicate()
+        print("=" * 105)
+        print("Welcome to my command line Robinhood Trader! Try it out and give any feedback you have to my github page!\n")
         print("There are 5 things you can do:")
         print("\t1) To look at your stock portfolio, type 'portfolio'")
         print("\t2) To look at a specific stock, type 'stock'")
@@ -211,11 +228,11 @@ if __name__ == '__main__':
         elif command == 'end' or command == 'End':
             trader.logout()
             print("Thanks for using my project!")
-            time.sleep(5)
+            time.sleep(3)
             print('\x1b[2J\x1b[H') # Escape sequence to clear screen
             break
         else:
             print("\nDid not enter a correct command.\nEnding session.")
-            time.sleep(5)
+            time.sleep(3)
             print('\x1b[2J\x1b[H') # Escape sequence to clear screen
             break
