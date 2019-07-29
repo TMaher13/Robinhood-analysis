@@ -1,2 +1,0 @@
-USERNAME = 'None'
-PASSWORD = 'None'

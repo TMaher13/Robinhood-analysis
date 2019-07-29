@@ -1,25 +1,10 @@
-# Robinhood-analysis
-Access Robinhood account, analyze stock data, and make predictions about what stocks you should buy.
+# Development branch for analyzing stock information
 
-Within this project, 3 main scripts will be used to complete the following:
+The goal of the work in this branch is to look at several indicators for stocks to suggest buy/sell flags
 
-  1. Access Robinhood account.
+Indicators I will be implementing include:
+  1. MACD (Moving Average Convergence Divergence)
 
-      a. Report movement of stocks owned for today.
+  2. Relative Strength Index
 
-      b. Buy/sell stocks from the command line.
-
-  2. Use the Stocker Toolkit to get stock data (quandl based package)
-
-      a. Use Stocker toolkit to show price data and steps in training/testing of prediction model
-
-      b. Give suggestions from predictions for valuations of stocks
-
-  3. Build my own classifier for stock analysis with ML
-
-      a. Build a classifier with classes: 'Buy', 'Hold', 'Sell'
-
-      b. Possibly, later on move towards building my own stock price predictor (although the Efficient Market Hypothesis dissuades me from doing so)
-
-
-**Currently in development**
+  3. Exponential Moving Average
