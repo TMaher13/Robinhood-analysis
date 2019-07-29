@@ -23,8 +23,13 @@ from config import USERNAME, PASSWORD
 import colorama
 colorama.init()
 
+## enum for vuy and sell orders
+class Transaction(Enum):
+    """enum for buy/sell orders"""
+    BUY = 'buy'
+    SELL = 'sell'
 
-## Build robinhood class
+## Build Robinhood class
 class Robinhood:
     ## Wrapper for fetching and parsing Robinhood endpoints
     rh_endpoints = {
@@ -59,6 +64,8 @@ class Robinhood:
         "options": "https://api.robinhood.com/options/",
         "marketdata": "https://api.robinhood.com/marketdata/"
     }
+
+    instruments_cache = {}
 
     ## Initialize account info
     session = None
@@ -112,7 +119,7 @@ class Robinhood:
 
         try:
             res = self.session.post(
-                self.endpoints['login'],
+                self.rh_endpoints['login'],
                 data=payload
             )
             res.raise_for_status()
@@ -132,6 +139,8 @@ class Robinhood:
 
         return False
 
+
+
     def logout(self):
 
         try:
@@ -142,6 +151,8 @@ class Robinhood:
         except:
             print("\nAlready logged out.")
 
+
+
     def show_portfolio(self):
         ## Show portfolio
         while True:
@@ -151,6 +162,23 @@ class Robinhood:
             leave = input("Exit back to home page? (y/n) ")
             if leave == 'y' or leave == 'Y': time.sleep(1); break
             else: continue
+
+
+
+
+    def get_instrument(self, symbol):
+        if not symbol in self.instruments_cache:
+            instruments = trader.instruments(symbol)
+            for instrument in instruments:
+                self.add_instrument(instrument['url'], instrument['symbol'])
+
+        url = ''
+        if symbol in self.instruments_cache:
+            url = self.instruments_cache[symbol]
+
+        return { 'symbol': symbol, 'url': url }
+
+
 
     def show_stock(self):
         ## Show a specific stock
@@ -163,6 +191,7 @@ class Robinhood:
             else: time.sleep(1); break
 
 
+
     ## Method used for buying stocks.
     ## Ask for ticker, show current price, and ask how many stocks they would like to buy
     ## Built so that user must enter twice that they would like to buy to ensure transaction
@@ -171,22 +200,75 @@ class Robinhood:
         #print('Buy')
         print('\x1b[2J\x1b[H') # Escape sequence to clear screen
         print("Welcome to the page where you can buy stock!\n")
-        ticker = input("Enter the ticker for the stock you would like to buy: ")
-
-        transaction = Transaction.BUY
-        stock_instrument = self.get_instrument(ticker)
-        if not stock_instrument['url']:
-            print("Stock cannot be found.")
-            print("Leaving transaction page.")
-            time.sleep(1)
-            return
 
         while True:
+            ticker = input("Enter the ticker for the stock you would like to buy: ")
 
+            transaction = Transaction.BUY
+            ## For now only doing market buys. May implement limit buys later
+            order = 'market'
+
+            stock_instrument = self.get_instrument(ticker)
+            if not stock_instrument['url']:
+                print("Stock cannot be found or cannot be bought.")
+                print("Leaving transaction page.")
+                time.sleep(1)
+                return
+
+            transaction = Transaction(transaction)
+            price = self.quote_data(instrument['symbol'])['bid_price']
+
+            print("Current price is $" + str(price))
+            cont_trans = input("Continue with transaction at this price? (y/n) ")
+            if cont_trans != 'y' or cont_trans != 'Y':
+                if cont_trans == 'n' or cont_trans == 'N':
+                    print("\nLeaving transaction page.")
+                    time.sleep(1)
+                    return
+                else:
+                    print("\nInvalid character entered")
+                    print("Leaving transaction page")
+                    time.sleep(1)
+                    return
+
+            num_shares = input("How many shares would you like to purchase? (whole number only) ")
+            if not num_shares.isdigit():
+                print("\nInvalid character entered")
+                print("Leaving transaction page")
+                time.sleep(1)
+                return
+            num_shares = int(num_shares)
+
+            payload = {
+                'account': self.get_account()['url'],
+                'instrument': unquote(instrument['url']),
+                'price': float(price),
+                'quantity': num_shares,
+                'side': transaction.name.lower(),
+                'symbol': instrument['symbol'],
+                'time_in_force': time_in_force.lower(),
+                'trigger': 'immediate',
+                'type': order.lower()
+            }
+
+            trade = self.session.post(self.rh_endpoints['orders'],
+                                        data=payload)
+            if not (trade.status_code == 200 or trade.status_code == 201):
+                print("Error executing order")
+                try:
+                    data = trade.json()
+                    if 'detail' in data:
+                        print(data['detail'])
+                except:
+                    pass
+            else:
+                print("\nDone\n\n")
 
             stay = input("Buy another stock? (y/n) ")
             if stay == 'y' or stay == 'Y': continue
-            else: time.sleep(1); break
+            else: time.sleep(1); return
+
+
 
     def sell_stock(self):
         ## Sell stock
@@ -211,7 +293,14 @@ if __name__ == '__main__':
         #process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
         #output, error = process.communicate()
         print("=" * 105)
-        print("Welcome to my command line Robinhood Trader! Try it out and give any feedback you have to my github page!\n")
+        print("Welcome to my command line Robinhood Trader! Try it out and give any feedback you have to my github page!\n\n")
+        if not trader.login_request():
+            print("Incorrect username or password entered. Ending session.")
+            time.sleep(3)
+            break
+        print('\x1b[2J\x1b[H') # Escape sequence to clear screen
+
+        print("Welcome to my command line Robinhood Trader! Try it out and give any feedback you have to my github page!\n\n")
         print("There are 5 things you can do:")
         print("\t1) To look at your stock portfolio, type 'portfolio'")
         print("\t2) To look at a specific stock, type 'stock'")
