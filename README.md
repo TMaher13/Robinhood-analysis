@@ -1,4 +1,6 @@
 # Robinhood-analysis (Project currently on hold until Robinhood releases a working API)
+
+**Current work is being done in the dev-stock-analysis branch**
 Access Robinhood account, analyze stock data, and make predictions about what stocks you should buy.
 
 Within this project, 3 main scripts will be used to complete the following:
