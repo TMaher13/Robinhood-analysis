@@ -24,7 +24,7 @@ def stock_predict(ticker):
     one_year = dt.timedelta(days=365)
     one_year_ago = today - one_year
 
-    quandl.ApiConfig.api_key = 'khgNVC9qySoZyPshAWaw'
+    quandl.ApiConfig.api_key = 'not-a-key'
     data_df = quandl.get('WIKI/' + ticker, start_date=str(one_year_ago), end_date=str(today))
     data_price = data_df['Close'].values
     data_np = data_df.values
